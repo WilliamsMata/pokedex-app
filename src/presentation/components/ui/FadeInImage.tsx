@@ -42,12 +42,13 @@ export default function FadeInImage({uri, style}: FadeInImageProps) {
       <Animated.Image
         source={{uri}}
         style={[
-          style,
           {
             opacity: animatedOpacity,
           },
+          style,
         ]}
         onLoadEnd={onLoadEnd}
+        resizeMode="contain"
       />
     </View>
   );
