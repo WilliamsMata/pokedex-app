@@ -82,6 +82,64 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
         )}
       />
 
+      {/* Abilities */}
+      <Text style={styles.subTitle}>Abilities</Text>
+      <FlatList
+        data={pokemon.abilities}
+        horizontal
+        keyExtractor={item => item}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item}) => (
+          <Chip selectedColor="white">{Formatter.capitalize(item)}</Chip>
+        )}
+      />
+
+      {/* Stats */}
+      <Text style={styles.subTitle}>Stats</Text>
+      <FlatList
+        data={pokemon.stats}
+        horizontal
+        keyExtractor={item => item.name}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item}) => (
+          <View style={styles.statsContainer}>
+            <Text style={styles.statName}>
+              {Formatter.capitalize(item.name)}
+            </Text>
+            <Text style={styles.statValue}>{item.value}</Text>
+          </View>
+        )}
+      />
+
+      {/* Moves */}
+      <Text style={styles.subTitle}>Moves</Text>
+      <FlatList
+        data={pokemon.moves}
+        horizontal
+        keyExtractor={item => item.name}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item}) => (
+          <View style={styles.statsContainer}>
+            <Text style={styles.statName}>
+              {Formatter.capitalize(item.name)}
+            </Text>
+            <Text style={styles.statValue}>lvl {item.level}</Text>
+          </View>
+        )}
+      />
+
+      {/* Games */}
+      <Text style={styles.subTitle}>Games</Text>
+      <FlatList
+        data={pokemon.games}
+        horizontal
+        keyExtractor={item => item}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item}) => (
+          <Chip selectedColor="white">{Formatter.capitalize(item)}</Chip>
+        )}
+      />
+
       <View style={styles.lastSeparator} />
     </ScrollView>
   );
@@ -153,5 +211,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginHorizontal: 20,
     alignItems: 'center',
+  },
+  statName: {
+    flex: 1,
+    color: 'white',
+  },
+  statValue: {
+    color: 'white',
   },
 });
