@@ -9,11 +9,13 @@ interface PokemonCardProps {
 }
 
 export default function PokemonCard({pokemon}: PokemonCardProps) {
+  const capitalizeName =
+    pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1);
+
   return (
-    // todo: Background color
-    <Card style={[styles.cardContainer]}>
+    <Card style={[styles.cardContainer, {backgroundColor: pokemon.color}]}>
       <Text style={styles.name} variant="bodyLarge" lineBreakMode="middle">
-        {pokemon.name}
+        {capitalizeName}
         {'\n#' + pokemon.id}
       </Text>
 
@@ -58,6 +60,9 @@ const styles = StyleSheet.create({
     color: 'white',
     top: 10,
     left: 10,
+    textShadowColor: 'black', // Shadow (outline) color
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 1,
   },
   pokeball: {
     width: 100,
