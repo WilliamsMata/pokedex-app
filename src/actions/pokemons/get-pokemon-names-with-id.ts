@@ -2,7 +2,7 @@ import {pokeApi} from '../../config/api/pokeApi';
 import {PokeAPIPaginationResponse} from '../../infrastructure/interfaces/pokeapi.interfaces';
 
 export const getPokemonNamesWithId = async () => {
-  const url = '/pokemon?limit=1500';
+  const url = '/pokemon?limit=1000';
   try {
     const {data} = await pokeApi.get<PokeAPIPaginationResponse>(url);
 

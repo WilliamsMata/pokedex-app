@@ -4,9 +4,12 @@ import {ActivityIndicator, TextInput} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useQuery} from '@tanstack/react-query';
 import {globalTheme} from '../../../config/theme/global-theme';
-import type {Pokemon} from '../../../domain/entities/pokemon';
 import PokemonCard from '../../components/pokemons/PokemonCard';
-import {getPokemonNamesWithId} from '../../../actions/pokemons';
+import {
+  getPokemonNamesWithId,
+  getPokemonsByIds,
+} from '../../../actions/pokemons';
+import FullScreenLoader from '../../components/ui/FullScreenLoader';
 
 export default function SearchScreen() {
   const {top} = useSafeAreaInsets();
@@ -32,6 +35,18 @@ export default function SearchScreen() {
     );
   }, [term, pokemonNameList]);
 
+  const pokemonIds = pokemonNameIdList.map(pokemon => pokemon.id);
+
+  const {isLoading: isLoadingPokemons, data: pokemons = []} = useQuery({
+    queryKey: ['pokemons', 'by', pokemonIds],
+    queryFn: () => getPokemonsByIds(pokemonIds),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
+
   return (
     <View style={[globalTheme.globalMargin, {paddingTop: top + 10}]}>
       <TextInput
@@ -43,22 +58,32 @@ export default function SearchScreen() {
         onChangeText={setTerm}
       />
 
-      <ActivityIndicator style={styles.activityIndicator} />
+      {isLoadingPokemons && (
+        <ActivityIndicator style={styles.activityIndicator} />
+      )}
 
       <FlatList
-        data={[] as Pokemon[]}
+        data={pokemons}
         keyExtractor={item => item.id.toString()}
         numColumns={2}
         style={[{paddingTop: top}]}
         renderItem={({item}) => <PokemonCard pokemon={item} />}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={ListFooterComponent}
       />
     </View>
   );
 }
 
+const ListFooterComponent = () => {
+  return <View style={styles.listFooterComponent} />;
+};
+
 const styles = StyleSheet.create({
   activityIndicator: {
     paddingTop: 20,
+  },
+  listFooterComponent: {
+    height: 120,
   },
 });
