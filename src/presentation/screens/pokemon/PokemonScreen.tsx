@@ -5,12 +5,13 @@ import {StackParamList} from '../../navigator/StackNavigator';
 import {useQuery} from '@tanstack/react-query';
 import {getPokemonById} from '../../../actions/pokemons';
 import FullScreenLoader from '../../components/ui/FullScreenLoader';
-import {Chip, Text} from 'react-native-paper';
+import {ActivityIndicator, Chip, Text} from 'react-native-paper';
 import FadeInImage from '../../components/ui/FadeInImage';
 import {Formatter} from '../../../config/helpers/formatter';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ThemeContext} from '../../context/ThemeContext';
 import {getTextColor, getTypeColor} from '../../../config/helpers/get-color';
+import PokemonCard from '../../components/pokemons/PokemonCard';
 
 interface PokemonScreenProps
   extends StackScreenProps<StackParamList, 'Pokemon'> {}
@@ -28,6 +29,18 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
   const {isLoading, data: pokemon} = useQuery({
     queryKey: ['pokemon', id],
     queryFn: () => getPokemonById(id),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  const {isLoading: isLoadingPrevPokemon, data: prevPokemon} = useQuery({
+    queryKey: ['pokemon', id - 1],
+    queryFn: () => getPokemonById(id - 1),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  const {isLoading: isLoadingNextPokemon, data: nextPokemon} = useQuery({
+    queryKey: ['pokemon', id + 1],
+    queryFn: () => getPokemonById(id + 1),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
@@ -154,6 +167,19 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
         )}
       />
 
+      {/* Prev and Last Pokemon */}
+
+      {isLoadingNextPokemon || isLoadingPrevPokemon ? (
+        <View style={styles.loadingIndicator}>
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <View style={styles.prevLastPokemonContainer}>
+          {prevPokemon && <PokemonCard pokemon={prevPokemon} />}
+          {nextPokemon && <PokemonCard pokemon={nextPokemon} />}
+        </View>
+      )}
+
       <View style={styles.lastSeparator} />
     </ScrollView>
   );
@@ -236,5 +262,10 @@ const styles = StyleSheet.create({
   },
   statValue: {
     color: 'white',
+  },
+  prevLastPokemonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
   },
 });
