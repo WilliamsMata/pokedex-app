@@ -10,11 +10,14 @@ import {
   getPokemonsByIds,
 } from '../../../actions/pokemons';
 import FullScreenLoader from '../../components/ui/FullScreenLoader';
+import {useDebounce} from '../../hooks/useDebounce';
 
 export default function SearchScreen() {
   const {top} = useSafeAreaInsets();
 
   const [term, setTerm] = useState<string>('');
+
+  const debouncedTerm = useDebounce(term, 500);
 
   const {isLoading, data: pokemonNameList = []} = useQuery({
     queryKey: ['pokemons', 'all'],
@@ -22,18 +25,20 @@ export default function SearchScreen() {
   });
 
   const pokemonNameIdList = useMemo(() => {
-    if (!isNaN(Number(term))) {
-      return pokemonNameList.filter(pokemon => pokemon.id === Number(term));
+    if (!isNaN(Number(debouncedTerm))) {
+      return pokemonNameList.filter(
+        pokemon => pokemon.id === Number(debouncedTerm),
+      );
     }
 
-    if (term.length < 3) {
+    if (debouncedTerm.length < 3) {
       return [];
     }
 
     return pokemonNameList.filter(pokemon =>
-      pokemon.name.includes(term.toLowerCase()),
+      pokemon.name.includes(debouncedTerm.toLowerCase()),
     );
-  }, [term, pokemonNameList]);
+  }, [debouncedTerm, pokemonNameList]);
 
   const pokemonIds = pokemonNameIdList.map(pokemon => pokemon.id);
 
