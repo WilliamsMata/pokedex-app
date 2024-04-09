@@ -1,22 +1,21 @@
 import React from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {FAB, Text, useTheme} from 'react-native-paper';
 import {useInfiniteQuery, useQueryClient} from '@tanstack/react-query';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {getPokemons} from '../../../actions/pokemons';
 import PokeballBackground from '../../components/ui/PokeballBackground';
 import {globalTheme} from '../../../config/theme/global-theme';
 import PokemonCard from '../../components/pokemons/PokemonCard';
+import type {StackScreenProps} from '@react-navigation/stack';
+import type {StackParamList} from '../../navigator/StackNavigator';
 
-export default function HomeScreen() {
+interface HomeScreenProps extends StackScreenProps<StackParamList, 'Home'> {}
+
+export default function HomeScreen({navigation}: HomeScreenProps) {
   const {top} = useSafeAreaInsets();
 
-  // this is the traditional way to fetch data
-  // const {isLoading, data: pokemons = []} = useQuery({
-  //   queryKey: ['pokemons'],
-  //   queryFn: () => getPokemons(0),
-  //   staleTime: 1000 * 60 * 5, // 5 minutes
-  // });
+  const theme = useTheme();
 
   const queryClient = useQueryClient();
 
@@ -51,6 +50,14 @@ export default function HomeScreen() {
         onEndReachedThreshold={0.6}
         onEndReached={() => fetchNextPage()}
         showsVerticalScrollIndicator={false}
+      />
+
+      <FAB
+        label="Search"
+        style={[globalTheme.fab, {backgroundColor: theme.colors.primary}]}
+        mode="elevated"
+        color={theme.dark ? 'black' : 'white'}
+        onPress={() => navigation.push('Search')}
       />
     </View>
   );
