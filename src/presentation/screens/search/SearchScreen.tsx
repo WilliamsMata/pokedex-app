@@ -71,7 +71,7 @@ export default function SearchScreen() {
         data={pokemons}
         keyExtractor={item => item.id.toString()}
         numColumns={2}
-        style={[{paddingTop: top}]}
+        style={[styles.flatList]}
         renderItem={({item}) => <PokemonCard pokemon={item} />}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={ListFooterComponent}
@@ -90,5 +90,8 @@ const styles = StyleSheet.create({
   },
   listFooterComponent: {
     height: 120,
+  },
+  flatList: {
+    paddingTop: 20,
   },
 });

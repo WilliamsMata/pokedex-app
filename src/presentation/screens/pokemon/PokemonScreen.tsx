@@ -10,6 +10,7 @@ import FadeInImage from '../../components/ui/FadeInImage';
 import {Formatter} from '../../../config/helpers/formatter';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ThemeContext} from '../../context/ThemeContext';
+import {getTextColor, getTypeColor} from '../../../config/helpers/get-color';
 
 interface PokemonScreenProps
   extends StackScreenProps<StackParamList, 'Pokemon'> {}
@@ -21,8 +22,8 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
   const {isDark} = useContext(ThemeContext);
 
   const pokeballImg = isDark
-    ? require('../../../assets/pokeball-light.png')
-    : require('../../../assets/pokeball-dark.png');
+    ? require('../../../assets/pokeball-dark.png')
+    : require('../../../assets/pokeball-light.png');
 
   const {isLoading, data: pokemon} = useQuery({
     queryKey: ['pokemon', id],
@@ -34,9 +35,12 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
     return <FullScreenLoader />;
   }
 
+  const backgroundColor = pokemon.color;
+  const textColor = getTextColor(backgroundColor);
+
   return (
     <ScrollView
-      style={[styles.container, {backgroundColor: pokemon.color}]}
+      style={[styles.container, {backgroundColor}]}
       bounces={false}
       showsVerticalScrollIndicator={false}>
       {/* Header Container */}
@@ -46,6 +50,7 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
           style={{
             ...styles.pokemonName,
             top: top + 5,
+            color: textColor,
           }}>
           {Formatter.capitalize(pokemon.name) + '\n'}#{pokemon.id}
         </Text>
@@ -63,8 +68,13 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
             key={type}
             mode="outlined"
             selectedColor="white"
-            style={styles.typeChip}>
-            {type}
+            style={[
+              styles.typeChip,
+              {
+                backgroundColor: getTypeColor(type),
+              },
+            ]}>
+            <Text style={styles.typeChipText}>{type}</Text>
           </Chip>
         ))}
       </View>
@@ -83,19 +93,19 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
       />
 
       {/* Abilities */}
-      <Text style={styles.subTitle}>Abilities</Text>
+      <Text style={[styles.subTitle, {color: textColor}]}>Abilities</Text>
       <FlatList
         data={pokemon.abilities}
         horizontal
         keyExtractor={item => item}
         showsHorizontalScrollIndicator={false}
         renderItem={({item}) => (
-          <Chip selectedColor="white">{Formatter.capitalize(item)}</Chip>
+          <Chip selectedColor={textColor}>{Formatter.capitalize(item)}</Chip>
         )}
       />
 
       {/* Stats */}
-      <Text style={styles.subTitle}>Stats</Text>
+      <Text style={[styles.subTitle, {color: textColor}]}>Stats</Text>
       <FlatList
         data={pokemon.stats}
         horizontal
@@ -103,16 +113,18 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
         showsHorizontalScrollIndicator={false}
         renderItem={({item}) => (
           <View style={styles.statsContainer}>
-            <Text style={styles.statName}>
+            <Text style={[styles.statName, {color: textColor}]}>
               {Formatter.capitalize(item.name)}
             </Text>
-            <Text style={styles.statValue}>{item.value}</Text>
+            <Text style={[styles.statValue, {color: textColor}]}>
+              {item.value}
+            </Text>
           </View>
         )}
       />
 
       {/* Moves */}
-      <Text style={styles.subTitle}>Moves</Text>
+      <Text style={[styles.subTitle, {color: textColor}]}>Moves</Text>
       <FlatList
         data={pokemon.moves}
         horizontal
@@ -120,23 +132,25 @@ export default function PokemonScreen({route}: PokemonScreenProps) {
         showsHorizontalScrollIndicator={false}
         renderItem={({item}) => (
           <View style={styles.statsContainer}>
-            <Text style={styles.statName}>
+            <Text style={[styles.statName, {color: textColor}]}>
               {Formatter.capitalize(item.name)}
             </Text>
-            <Text style={styles.statValue}>lvl {item.level}</Text>
+            <Text style={[styles.statValue, {color: textColor}]}>
+              lvl {item.level}
+            </Text>
           </View>
         )}
       />
 
       {/* Games */}
-      <Text style={styles.subTitle}>Games</Text>
+      <Text style={[styles.subTitle, {color: textColor}]}>Games</Text>
       <FlatList
         data={pokemon.games}
         horizontal
         keyExtractor={item => item}
         showsHorizontalScrollIndicator={false}
         renderItem={({item}) => (
-          <Chip selectedColor="white">{Formatter.capitalize(item)}</Chip>
+          <Chip selectedColor={textColor}>{Formatter.capitalize(item)}</Chip>
         )}
       />
 
@@ -152,10 +166,14 @@ const styles = StyleSheet.create({
   types: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 20,
   },
   typeChip: {
+    borderColor: 'white',
     marginLeft: 10,
+  },
+  typeChipText: {
+    color: 'white',
   },
   flatList: {
     marginTop: 20,
