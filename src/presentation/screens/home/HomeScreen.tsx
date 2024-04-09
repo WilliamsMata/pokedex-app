@@ -64,7 +64,19 @@ export default function HomeScreen({navigation}: HomeScreenProps) {
 }
 
 function ListHeaderComponent() {
-  return <Text variant="displayMedium">Pokédex</Text>;
+  const theme = useTheme();
+
+  const getHeaderColor = () => ({
+    color: theme.dark ? 'white' : 'black',
+  });
+
+  return (
+    <Text
+      variant="displayMedium"
+      style={[getHeaderColor(), styles.listHeaderText]}>
+      Pokédex
+    </Text>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -75,5 +87,8 @@ const styles = StyleSheet.create({
   },
   flatList: {
     paddingHorizontal: 20,
+  },
+  listHeaderText: {
+    marginVertical: 10,
   },
 });
