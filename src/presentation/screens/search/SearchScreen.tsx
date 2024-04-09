@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo, useState} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import {ActivityIndicator, TextInput} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -11,12 +11,26 @@ import {getPokemonNamesWithId} from '../../../actions/pokemons';
 export default function SearchScreen() {
   const {top} = useSafeAreaInsets();
 
+  const [term, setTerm] = useState<string>('');
+
   const {isLoading, data: pokemonNameList = []} = useQuery({
     queryKey: ['pokemons', 'all'],
     queryFn: getPokemonNamesWithId,
   });
 
-  console.log(pokemonNameList);
+  const pokemonNameIdList = useMemo(() => {
+    if (!isNaN(Number(term))) {
+      return pokemonNameList.filter(pokemon => pokemon.id === Number(term));
+    }
+
+    if (term.length < 3) {
+      return [];
+    }
+
+    return pokemonNameList.filter(pokemon =>
+      pokemon.name.includes(term.toLowerCase()),
+    );
+  }, [term, pokemonNameList]);
 
   return (
     <View style={[globalTheme.globalMargin, {paddingTop: top + 10}]}>
@@ -25,8 +39,8 @@ export default function SearchScreen() {
         mode="flat"
         autoFocus
         autoCorrect={false}
-        value="Hola mundo!"
-        onChangeText={value => console.log(value)}
+        value={term}
+        onChangeText={setTerm}
       />
 
       <ActivityIndicator style={styles.activityIndicator} />
